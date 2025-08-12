@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      index:true,
     },
     email: {
       type: String,
@@ -12,16 +13,18 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
     passHash: {
       type: String,
       required: true,
+      select: false,
     },
-    role: {
+    refreshToken:{
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
-    },
+      index: true,
+    }
+    
   },
   { timestamps: true }
 );

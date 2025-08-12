@@ -8,6 +8,7 @@ dbConn()
 .then(()=>{
     app.listen(process.env.PORT || 8080,(req,res)=>{
         console.log(`Server is running on port ${process.env.PORT || 8080} `);
+        console.log(`http://localhost:${process.env.PORT || 8080}`);
     })
 })
 .catch((err)=>{
