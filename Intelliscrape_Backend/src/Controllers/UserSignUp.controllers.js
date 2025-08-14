@@ -1,6 +1,5 @@
 import { User } from "../Models/user.models.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import APIError from "../Utils/apiError.utils.js";
 
 const userSignUp = async (req, res) => {
