@@ -1,1 +1,50 @@
 @import "tailwindcss";
+
+@keyframes moveLine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes starPulse {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes floatingTitle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Utility classes for animations */
+.animate-moveLine {
+  animation: moveLine 8s linear infinite;
+}
+
+.animate-moveLine-delay {
+  animation: moveLine 8s linear infinite;
+  animation-delay: 4s; /* half duration for alternation */
+}
+
+.animate-starPulse {
+  animation: starPulse 3s ease-in-out infinite;
+}
+
+.animate-floatingTitle {
+  animation: floatingTitle 6s ease-in-out infinite;
+}
