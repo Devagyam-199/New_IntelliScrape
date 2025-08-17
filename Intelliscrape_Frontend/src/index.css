@@ -9,6 +9,15 @@
   }
 }
 
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 @keyframes starPulse {
   0%,
   100% {
@@ -27,7 +36,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-10px);
   }
 }
 
@@ -41,10 +50,14 @@
   animation-delay: 4s; /* half duration for alternation */
 }
 
+.animate-pulse {
+  animation: pulse 3s ease-in-out infinite;
+}
+
 .animate-starPulse {
   animation: starPulse 3s ease-in-out infinite;
 }
 
 .animate-floatingTitle {
-  animation: floatingTitle 6s ease-in-out infinite;
+  animation: floatingTitle 4s ease-in-out infinite;
 }

@@ -46,7 +46,7 @@ const UserLogin = () => {
             <div className="flex flex-col gap-y-6 w-full">
               <div>
                 <label
-                  htmlFor="username/email"
+                  htmlFor="identifier"
                   className="text-cyan-400 font-semibold text-xs sm:text-sm md:text-base"
                 >
                   Email/Username
@@ -63,6 +63,7 @@ const UserLogin = () => {
                       stroke="#b0b0b0"
                       className="md:w-4 md:h-4 w-3 h-3 sm:w-3 sm:h-3 font-bold text-gray-300"
                       fill="currentColor"
+                      aria-hidden="true"
                     >
                       <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                       <g
@@ -104,6 +105,7 @@ const UserLogin = () => {
                     </svg>
                   </span>
                   <input
+                    id="identifier"
                     type="text"
                     placeholder="Enter your email/username"
                     className="w-full pl-9 sm:pl-10 pr-4 py-2 bg-[#0b1b2b] text-white text-xs flex items-center sm:text-sm md:text-base rounded-md 
@@ -119,7 +121,7 @@ const UserLogin = () => {
               </div>
               <div>
                 <label
-                  htmlFor="username/email"
+                  htmlFor="password"
                   className="text-cyan-400 py-2 font-semibold text-xs sm:text-sm md:text-base"
                 >
                   Password
@@ -131,6 +133,7 @@ const UserLogin = () => {
                       xmlns="http://www.w3.org/2000/svg"
                       className="md:w-4 md:h-4 w-3 h-3 sm:w-3 sm:h-3 font-bold text-gray-300"
                       fill="currentColor"
+                      aria-hidden="true"
                     >
                       <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                       <g
@@ -149,6 +152,7 @@ const UserLogin = () => {
                     </svg>
                   </span>
                   <input
+                    id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     className="w-full pl-9 sm:pl-10 pr-4 py-2 bg-[#0b1b2b] text-white text-xs flex items-center sm:text-sm md:text-base rounded-md 
@@ -164,6 +168,7 @@ const UserLogin = () => {
                     type="button"
                     className="absolute inset-y-0 right-4 flex items-center text-gray-400"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
                       <EyeOff className="md:w-4 md:h-4 w-3 h-3 sm:w-3 sm:h-3" />
@@ -215,13 +220,16 @@ const UserLogin = () => {
               <div className="flex-1 border-t mt-1 border-gray-600"></div>
             </div>
             <div>
-              <button className="w-full backdrop-blur-md cursor-pointer bg-slate-700/80 px-5 py-3 text-white font-normal rounded-md ">
+              <button aria-label="Sign in with Google" className="w-full backdrop-blur-md cursor-pointer bg-slate-700/80 px-5 py-3 text-white font-normal rounded-md ">
                 Continue with Google
               </button>
             </div>
             <div className="flex justify-center text-xs sm:text-sm md:text-base mt-2 items-center font-semibold">
               <p className="text-slate-400">Don't have an account?</p>
-              <Link to={"/signup"} className="text-cyan-400 hover:text-cyan-300 transition-all duration-200 ml-1 cursor-pointer">
+              <Link
+                to={"/signup"}
+                className="text-cyan-400 hover:text-cyan-300 transition-all duration-200 ml-1 cursor-pointer"
+              >
                 Sign up
               </Link>
             </div>
@@ -230,13 +238,15 @@ const UserLogin = () => {
         <div className="p-2">
           <p className="text-xs sm:text-sm md:text-md text-slate-400 text-center">
             By signing in, you agree to our{" "}
-            <Link to={"/terms-and-conditions"}
+            <Link
+              to={"/terms-and-conditions"}
               className="text-cyan-400 hover:text-cyan-300 cursor-pointer transition-all duration-200"
             >
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link to={"/privacy-policy"}
+            <Link
+              to={"/privacy-policy"}
               className="text-cyan-400 hover:text-cyan-300 cursor-pointer transition-all duration-200"
             >
               Privacy Policy
