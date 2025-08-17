@@ -17,12 +17,12 @@ const signUpValidation = (req, res, next) => {
   }
 
   const strongPasswordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@_.\/!#$%^&*])[A-Za-z\d@_.\/!#$%^&*]{6,12}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@_.\/!#$%^&*])[A-Za-z\d@_.\/!#$%^&*]{8,12}$/;
   if (!strongPasswordRegex.test(password)) {
     return next(
       new APIError(
         400,
-        "Password must be 6-12 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character (@_./!#$%^&*)"
+        "Password must be 8-12 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character (@_./!#$%^&*)"
       )
     );
   }
