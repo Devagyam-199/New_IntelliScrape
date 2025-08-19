@@ -3,6 +3,7 @@ import AnimatedBackground from "../utils/LoginBackground";
 import IntelliscrapeIcon from "../utils/intelliscrapeicon";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const UserLogin = () => {
   const [identifier, setIdentifier] = useState("");
@@ -12,7 +13,22 @@ const UserLogin = () => {
   const loginHandler = async (e) => {
     e.preventDefault();
 
-    console.log("Login Attempted with:", { identifier, password });
+    axios
+      .post(
+        `http://localhost:3000/api/v1/user/login`,
+        {
+          identifier: identifier,
+          password: password,
+        },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => "Login Complete");
   };
   useEffect;
   return (
@@ -168,7 +184,9 @@ const UserLogin = () => {
                     type="button"
                     className="absolute inset-y-0 right-4 flex items-center text-gray-400"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="md:w-4 md:h-4 w-3 h-3 sm:w-3 sm:h-3" />
@@ -220,7 +238,10 @@ const UserLogin = () => {
               <div className="flex-1 border-t mt-1 border-gray-600"></div>
             </div>
             <div>
-              <button aria-label="Sign in with Google" className="w-full backdrop-blur-md cursor-pointer bg-slate-700/80 px-5 py-3 text-white font-normal rounded-md ">
+              <button
+                aria-label="Sign in with Google"
+                className="w-full backdrop-blur-md cursor-pointer bg-slate-700/80 px-5 py-3 text-white font-normal rounded-md "
+              >
                 Continue with Google
               </button>
             </div>

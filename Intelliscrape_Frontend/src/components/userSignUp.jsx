@@ -4,6 +4,7 @@ import IntelliscrapeIcon from "../utils/intelliscrapeicon";
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const UserSignUp = () => {
   const [userName, setUserName] = useState("");
@@ -15,7 +16,25 @@ const UserSignUp = () => {
 
   const signUpHandler = async (e) => {
     e.preventDefault();
-    console.log(`Sign up attempted with:`, { userName, email, password });
+
+    if (!policyAccept) {
+      alert("please accept the terms and conditions");
+      return;
+    }
+
+    axios
+      .post(`http://localhost:3000/api/v1/user/signup`, {
+        name: userName,
+        email: email,
+        password: password,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(()=>"Signup request finished");
   };
 
   return (

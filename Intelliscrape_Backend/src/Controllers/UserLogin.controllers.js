@@ -31,7 +31,7 @@ const userLogin = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // will send cookie only for https requests if secure is true
       sameSite: "strict", // helps to prevent cross-site request forgery attacks
-      maxAge: 6 * 60 * 60 * 1000, // 6 hours in milliseconds
+      maxAge:  15 * 60 * 1000, // 15 mins in milliseconds
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -50,7 +50,14 @@ const userLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    throw new APIError(500, "Error while logging in user: " + error.message);
+    if (error instanceof APIError) {
+      return res
+        .status(error.statusCode)
+        .json({ success: false, message: error.message });
+    }
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
 
