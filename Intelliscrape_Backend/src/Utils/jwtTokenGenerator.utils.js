@@ -2,14 +2,14 @@ import jwt from "jsonwebtoken";
 
 const jwtGenerator = (userId) => {
   const accessToken = jwt.sign(
-    { userId },
-    process.env.JWT_ACCESS_SECRET, 
+    { id: userId }, // Changed from { userId } to { id: userId }
+    process.env.JWT_ACCESS_SECRET,
     {
-        expiresIn: process.env.JWT_ACCESS_EXPIRY
+      expiresIn: process.env.JWT_ACCESS_EXPIRY
     }
-    );
+  );
   const refreshToken = jwt.sign(
-    {userId},
+    { id: userId }, // Changed from { userId } to { id: userId }
     process.env.JWT_REFRESH_SECRET,
     {
       expiresIn: process.env.JWT_REFRESH_EXPIRY

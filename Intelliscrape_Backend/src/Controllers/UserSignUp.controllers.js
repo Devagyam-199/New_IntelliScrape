@@ -38,7 +38,11 @@ const userSignUp = async (req, res) => {
       },
     });
   } catch (error) {
-    throw new APIError(500, "Error while signing up user:" + error.message);
+    console.error("Signup Error:", error);
+    return res.status(500).json({
+      message: "Error while signing up user",
+      error: error.message,
+    });
   }
 };
 

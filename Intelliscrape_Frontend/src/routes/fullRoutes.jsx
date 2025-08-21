@@ -1,10 +1,13 @@
 import { lazy } from "react";
+import ProtectRoutes from "../components/ProtectRoutes";
 
-const Home = lazy(()=>import("../components/Home"))
-const UserSignUp = lazy(()=>import("../components/userSignUp"))
-const UserLogin = lazy(()=>import("../components/userLogin"))
-const TermsnConditions = lazy(()=>import("../components/TermsnConditions"))
-const PrivacyPolicy = lazy(()=>import("../components/PrivacyPolicy"))
+const Home = lazy(() => import("../pages/Home"));
+const UserSignUp = lazy(() => import("../pages/userSignUp"));
+const UserLogin = lazy(() => import("../pages/userLogin"));
+const TermsnConditions = lazy(() => import("../pages/TermsnConditions"));
+const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
+const AboutUs = lazy(() => import("../pages/AboutUs"));
+const ScrapedHistory = lazy(() => import("../pages/ScrapedHistory"));
 
 const fullRoutes = [
   { path: "/", element: <Home /> },
@@ -12,6 +15,22 @@ const fullRoutes = [
   { path: "/login", element: <UserLogin /> },
   { path: "/terms-and-conditions", element: <TermsnConditions /> },
   { path: "/privacy-policy", element: <PrivacyPolicy /> },
+  {
+    path: "about-us",
+    element: (
+      <ProtectRoutes>
+        <AboutUs />
+      </ProtectRoutes>
+    ),
+  },
+  {
+    path: "userhistory",
+    element: (
+      <ProtectRoutes>
+        <ScrapedHistory />
+      </ProtectRoutes>
+    ),
+  },
 ];
 
 export default fullRoutes;

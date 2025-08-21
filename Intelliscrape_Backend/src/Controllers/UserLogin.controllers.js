@@ -1,64 +1,62 @@
-import APIError from "../Utils/apiError.utils.js";
-import { User } from "../Models/user.models.js";
 import bcrypt from "bcrypt";
+import { User } from "../Models/user.models.js";
+import APIError from "../Utils/apiError.utils.js";
 import jwtGenerator from "../Utils/jwtTokenGenerator.utils.js";
 
-const userLogin = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { identifier, password } = req.body;
 
-    const exisiting = await User.findOne({
-      $or: [{ name: identifier }, { email: identifier }],
-    }).select("+passHash"); //explicitly select passHash to compare passwords
+    const user = await User.findOne({ email: identifier }).select("+passHash");
 
-    if (!exisiting) {
-      throw new APIError(403, "User does not exist with this name or email");
+    if (!user) {
+      throw new APIError(401, "Invalid credentials");
     }
 
-    const ispassvalid = await bcrypt.compare(password, exisiting.passHash);
-
-    if (!ispassvalid) {
-      throw new APIError(403, "Invalid Password");
+    const isPasswordValid = await bcrypt.compare(password, user.passHash);
+    if (!isPasswordValid) {
+      throw new APIError(401, "Invalid credentials");
     }
 
-    const { accessToken, refreshToken } = jwtGenerator(exisiting._id);
+    const { accessToken, refreshToken } = jwtGenerator(user._id.toString());
 
-    exisiting.refreshToken = refreshToken;
-    await exisiting.save();
+    user.refreshToken = refreshToken;
+    await user.save();
 
-    //acess token sent as a cookie
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // will send cookie only for https requests if secure is true
-      sameSite: "strict", // helps to prevent cross-site request forgery attacks
-      maxAge:  15 * 60 * 1000, // 15 mins in milliseconds
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
     });
-
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({
+    return res.json({
       success: true,
       message: "Login Successful",
-      data: {
-        name: exisiting.name,
-        email: exisiting.email,
+      data: { //id: user._id,
+       name: user.name, 
+       email: user.email 
       },
     });
   } catch (error) {
-    if (error instanceof APIError) {
-      return res
-        .status(error.statusCode)
-        .json({ success: false, message: error.message });
-    }
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
+    console.error("Login error:", error);
+    next(error);
   }
 };
 
-export default userLogin;
+export default login;
+
+/* ===========================================================================
+   Challenges Faced and Resolutions
+   =========================================================================== 
+   - Challenge: Token payload used userId instead of id, causing middleware to fail in finding the user.
+     - Resolution: Updated token signing to use id, aligning with middleware expectation and fixing user lookup.
+   - Challenge: 
+     - Resolution: 
+   =========================================================================== */

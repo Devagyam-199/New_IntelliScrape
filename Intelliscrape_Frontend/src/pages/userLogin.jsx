@@ -2,20 +2,33 @@ import { useEffect, useState } from "react";
 import AnimatedBackground from "../utils/LoginBackground";
 import IntelliscrapeIcon from "../utils/intelliscrapeicon";
 import { Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import LoadingScreen from "../components/loadingScreen";
 
 const UserLogin = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [logSuccess, setLogSuccess] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (logSuccess) {
+      const timer = setTimeout(() => {
+        navigate("/");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [logSuccess, navigate]);
 
   const loginHandler = async (e) => {
     e.preventDefault();
 
     axios
       .post(
-        `http://localhost:3000/api/v1/user/login`,
+        "http://localhost:3000/api/v1/user/login",
         {
           identifier: identifier,
           password: password,
@@ -24,13 +37,18 @@ const UserLogin = () => {
       )
       .then((res) => {
         console.log(res.data);
+        setLogSuccess(true);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       })
-      .finally(() => "Login Complete");
+      .finally(() => console.log("Login request finished"));
   };
-  useEffect;
+
+  if (logSuccess) {
+    return <LoadingScreen loading={logSuccess} />;
+  }
+
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       <AnimatedBackground />

@@ -1,13 +1,19 @@
 import React, { Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route , useLocation } from "react-router-dom";
 import fullRoutes from "./routes/fullRoutes";
+import Navbar from "./components/Navbar";
+import { AuthProvider } from "./contexts/AuthContext";
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation(); // Now valid inside Router
+  const hideNavbarPaths = ["/signup", "/login"];
+
   return (
-    <Router>
+    <>
+      {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
       <Suspense
         fallback={
-          <div className="flex bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-950 justify-center text-6xl font-medium text-white items-center h-screen">
+          <div className="flex bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-950 justify-center md:text-xl text-lg lg:text-3xl font-medium text-white items-center h-screen">
             Loading...
           </div>
         }
@@ -26,7 +32,17 @@ const App = () => {
           ))}
         </Routes>
       </Suspense>
-    </Router>
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 };
 
