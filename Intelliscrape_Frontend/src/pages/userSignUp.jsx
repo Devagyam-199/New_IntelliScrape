@@ -54,7 +54,7 @@ const UserSignUp = () => {
           <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-6">
             <div className="flex flex-col items-center justify-center animate-floatingTitle">
               <div className="flex items-center space-x-2">
-                <span className="flex justify-center items-center pt-4">
+                <span className="flex justify-center w-18 h-18 items-center">
                   <IntelliscrapeIcon />
                 </span>
                 <p className="font-semibold text-xl sm:text-3xl md:text-5xl lg:text-6xl text-cyan-400 pr-4">

@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../utils/axiosApiInterceptor.js";
 
 export const AuthContext = createContext();
@@ -6,29 +7,40 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const publicRoutes = ["/login", "/signup"];
+    if (publicRoutes.includes(location.pathname)) {
+      setLoading(false);
+      setUser(null);
+      return;
+    }
+
     const authFetch = async () => {
       try {
         const res = await api.post("/auth/protected");
         setUser(res.data.user);
-        console.log(user)
       } catch (error) {
+        console.error("Auth fetch error:", error);
         setUser(null);
-        console.log(error)
       } finally {
         setLoading(false);
       }
     };
     authFetch();
-  }, []);
+  }, [location.pathname]);
 
   const logout = async () => {
     try {
-      await api.post("/auth/logout");
+      const logres = await api.post("/auth/logout");
+      navigate("/login");
+      console.log(logres.data);
     } catch (error) {
       console.error("Logout API error:", error);
     }
+    console.log("logout fired");
     document.cookie = "accessToken=; Max-Age=0; path=/";
     document.cookie = "refreshToken=; Max-Age=0; path=/";
     setUser(null);
@@ -42,7 +54,6 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default AuthContext;
-
 /* ===========================================================================
    Challenges Faced and Resolutions
    =========================================================================== 

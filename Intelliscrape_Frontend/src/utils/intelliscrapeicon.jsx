@@ -9,9 +9,9 @@ const IntelliscrapeIcon = () => {
         version="1.1"
         x="0px"
         y="0px"
-        viewBox="0 0 100 125"
+        viewBox="0 0 100 100"
         enable-background="new 0 0 100 100"
-        className="w-12 h-12 sm:w-16 sm:h-16 flex justify-center items-center  text-cyan-400"
+        className="h-auto w-auto flex justify-center items-center  text-cyan-400"
         fill="currentColor"
       >
         <g>

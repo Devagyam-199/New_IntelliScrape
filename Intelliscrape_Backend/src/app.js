@@ -17,9 +17,11 @@ app.use(cookieParser());
 
 import uservalidationrouter from "./Routes/api.userSignUp.routes.js";
 import accessTokenValidatorRoute from "./Routes/api.authAccessTokenValidate.routes.js";
+import scraperoute from "./Routes/api.scraper.routes.js";
 
 app.use("/api/v1/user", uservalidationrouter);
-app.use("/api/v1/auth",accessTokenValidatorRoute);
+app.use("/api/v1/auth", accessTokenValidatorRoute);
+app.use("/api/v1/access", scraperoute);
 
 app.use(globalErrorHandler);
 

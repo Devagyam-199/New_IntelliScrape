@@ -1,9 +1,11 @@
-import React from 'react'
+import React from "react";
 
 const Home = () => {
   return (
-    <div>Home</div>
-  )
-}
+    <div className="bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-950 h-screen w-full">
+      Home
+    </div>
+  );
+};
 
-export default Home
+export default Home;

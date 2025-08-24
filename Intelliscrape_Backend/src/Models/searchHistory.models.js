@@ -6,12 +6,12 @@ const searchHistorySchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    url: { type: String, required: true, trim: true, index : true},
+    url: { type: String, required: true, trim: true, index: true },
     status: {
       type: String,
       enum: ["pending", "success", "failed"],
       default: "pending",
-      index : true,
+      index: true,
     },
     scrapedAt: {
       type: Date,
