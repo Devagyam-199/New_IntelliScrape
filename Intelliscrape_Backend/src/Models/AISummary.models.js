@@ -15,6 +15,7 @@ const summarySchema = new mongoose.Schema(
       default: 'gemini-2.5-flash',
       required: true,
     },
+    highlights:[String],
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

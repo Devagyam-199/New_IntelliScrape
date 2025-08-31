@@ -6,7 +6,6 @@ const protectedController = async (req, res) => {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    // Fetch user data if needed (req.user is already set by middleware)
     const user = await User.findById(req.user.id).select("name email");
 
     if (!user) {

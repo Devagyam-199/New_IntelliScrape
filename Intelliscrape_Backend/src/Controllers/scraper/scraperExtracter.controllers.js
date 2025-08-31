@@ -161,8 +161,6 @@ const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
     pageCount++;
     await new Promise((resolve) => setTimeout(resolve, crawlDelay * 1000));
   }
-  allParas = allParas.slice(0, 50);
-  allItems = allItems.slice(0, 10);
 
   return { allParas, allItems, extractedData };
 };

@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
-import { stringify } from "querystring";
 const searchHistorySchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index:true,
+      index: true,
     },
     url: { type: String, required: true, trim: true, index: true },
     status: {
@@ -22,13 +21,6 @@ const searchHistorySchema = new mongoose.Schema(
     summary: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AISummary",
-    },
-    pdfexported: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "PDFExport",
-    },
-    pdfPath: {
-      type: String,
     },
   },
   { timestamps: true }

@@ -11,10 +11,19 @@ const scrapePDf = async (
   summaryData = "No summary available",
   highlights = []
 ) => {
-  // ✅ Force fallback to empty arrays if undefined
+  // Ensure arrays are valid
   allParas = Array.isArray(allParas) ? allParas : [];
   allItems = Array.isArray(allItems) ? allItems : [];
   highlights = Array.isArray(highlights) ? highlights : [];
+
+  console.log("PDF data:", { // Debug
+    title: extractedData?.title,
+    url: searchHistory.url,
+    summaryData,
+    highlights,
+    paragraphCount: allParas.length,
+    itemCount: allItems.length,
+  });
 
   const escapeHtml = (text) => {
     if (typeof text !== "string") return "";
@@ -66,7 +75,6 @@ const scrapePDf = async (
 
       <h2 class="text-2xl font-semibold mb-3">Main Content</h2>
       ${allParas
-        .slice(0, 5)
         .map((p) => `<p class="text-gray-700 mb-4">${escapeHtml(p)}</p>`)
         .join("")}
 
@@ -76,7 +84,6 @@ const scrapePDf = async (
         <h2 class="text-2xl font-semibold mb-3">Key Items</h2>
         <ul class="list-disc pl-6 mb-6">
           ${allItems
-            .slice(0, 5)
             .map(
               (item) =>
                 `<li class="text-gray-700">${escapeHtml(item.title)}${

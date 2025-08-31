@@ -11,7 +11,7 @@ const generatePDF = async (req, res) => {
       throw new APIError(400, "searchHistoryId is required");
     }
 
-    console.log(`Fetching SearchHistory for ID: ${searchHistoryId}`);
+    console.log(`Fetching SearchHistory`);
     const searchHistory = await SearchHistory.findById(searchHistoryId);
     if (!searchHistory) {
       throw new APIError(404, `Search history not found`);
@@ -31,7 +31,6 @@ const generatePDF = async (req, res) => {
       throw new APIError(404, `No summary data found for SearchHistory`);
     }
 
-    // ✅ Add safe defaults
     const { cleanData: extractedData = {} } = scrapeResult;
     const { summaryData = "No summary available", highlights = [] } = aiSummary;
     const { paragraphs: allParas = [], items: allItems = [] } = extractedData;
@@ -51,7 +50,7 @@ const generatePDF = async (req, res) => {
     });
     res.send(pdfBuffer);
 
-    console.log(`PDF sent successfully for ID: ${searchHistoryId}`);
+    console.log(`PDF sent successfully`);
   } catch (error) {
     console.error(`Error in generatePDF: ${error.message}`);
     res.status(error.statusCode || 500).json({
