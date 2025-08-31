@@ -10,7 +10,6 @@ const Navbar = () => {
 
   const [hamopen, setHamOpen] = useState(false);
 
-  // Hide Navbar on these routes
   const hideNavbarPaths = ["/login", "/signup"];
   if (hideNavbarPaths.includes(location.pathname)) {
     return null;
@@ -18,8 +17,8 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await logout(); // Call logout from AuthContext
-      navigate("/login"); // Navigate to login page after logout
+      await logout();
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -28,7 +27,7 @@ const Navbar = () => {
   return (
     <>
       {/*for laptop and tablets navbar*/}
-      <div className="bg-slate-900/65 border-b-2 border-b-slate-800 backdrop-blur-lg w-full h-20 top-0 sm:flex sm:justify-center sm:items-center hidden fixed">
+      <div className="bg-slate-900/65 z-10 border-b-2 border-b-slate-800 backdrop-blur-lg w-full h-20 top-0 sm:flex sm:justify-center sm:items-center hidden fixed">
         <div className="flex justify-center w-1/3 mx-2 items-center">
           <span className="w-12 h-12 mx-3">
             <IntelliscrapeIcon />

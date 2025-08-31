@@ -61,3 +61,25 @@
 .animate-floatingTitle {
   animation: floatingTitle 4s ease-in-out infinite;
 }
+
+.resizable-sidebar {
+  transition: width 0.1s linear;
+  overflow: hidden;
+}
+
+.resizable-sidebar:hover,
+.resizable-sidebar:active {
+  overflow: auto;
+}
+
+.resizable-sidebar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.resizable-sidebar::-webkit-scrollbar-thumb {
+  background: #104e64;
+  border-radius: 9999px;
+}
+.resizable-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}

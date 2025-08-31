@@ -5,14 +5,28 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import LoadingScreen from "../components/loadingScreen";
 
 const UserSignUp = () => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [policyAccept, setPolicyAccept] = useState(false);
+  const [signSuccess, setSignSuccess] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (signSuccess) {
+      const timer = setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [signSuccess, navigate]);
 
   const signUpHandler = async (e) => {
     e.preventDefault();
@@ -30,12 +44,17 @@ const UserSignUp = () => {
       })
       .then((res) => {
         console.log(res.data);
+        setSignSuccess(true);
       })
       .catch((error) => {
         console.log(error);
       })
-      .finally(()=>"Signup request finished");
+      .finally(() => "Signup request finished");
   };
+
+  if (signSuccess) {
+    return <LoadingScreen loading={signSuccess} />;
+  }
 
   return (
     <>
