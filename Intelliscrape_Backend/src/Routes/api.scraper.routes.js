@@ -10,6 +10,6 @@ const scraperoute = Router();
 scraperoute.post("/scrape", accessTokenAuthorized, scraper);
 scraperoute.all("/generate-pdf", accessTokenAuthorized, generatePDF);
 scraperoute.get("/history", accessTokenAuthorized, getUserHistory);
-scraperoute.post("/history-data/:searchHistoryId", accessTokenAuthorized, getScrapedData);
+scraperoute.get("/history-data/:searchHistoryId", accessTokenAuthorized, getScrapedData);
 
 export default scraperoute;

@@ -25,8 +25,6 @@ const getScrapedData = async (req, res) => {
       summary: aiSummary?.summaryData || "No summary available",
       highlights: aiSummary?.highlights || [],
     };
-
-    console.log("Scraped data response:", scrapedData); // Debug
     res.status(200).json({ data: scrapedData });
   } catch (error) {
     console.error(`Error in getScrapedData: ${error.message}`);

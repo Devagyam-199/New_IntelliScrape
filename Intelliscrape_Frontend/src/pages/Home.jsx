@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ResizableSidebar from "../components/ResizeableSideBar";
 import api from "../utils/axiosApiInterceptor.js";
 
@@ -8,12 +9,18 @@ const Home = () => {
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchUrl, setSearchUrl] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (location.state?.selectedData) {
+      setSelectedData(location.state.selectedData);
+    }
+
     const fetchHistory = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/access/history");
+        const response = await api.get("/access/history?page=1&limit=10");
         setHistory(response.data.data);
       } catch (error) {
         console.error("Error fetching history:", {
@@ -27,14 +34,13 @@ const Home = () => {
       }
     };
     fetchHistory();
-  }, []);
+  }, [location.state]);
 
   const handleTitleClick = async (searchHistoryId) => {
     try {
       setLoading(true);
       setErrors(null);
-      const response = await api.post(`/access/history-data/${searchHistoryId}`);
-      console.log("Selected data:", response.data.data); // Debug
+      const response = await api.get(`/access/history-data/${searchHistoryId}`);
       setSelectedData(response.data.data);
     } catch (error) {
       console.error("Error fetching scraped data:", {
@@ -61,9 +67,8 @@ const Home = () => {
       setLoading(true);
       setErrors(null);
       const response = await api.post("/access/scrape", { requrl: searchUrl });
-      console.log("Scrape response:", response.data.data); // Debug
       setSelectedData(response.data.data);
-      const historyResponse = await api.get("/access/history");
+      const historyResponse = await api.get("/access/history?page=1&limit=10");
       setHistory(historyResponse.data.data);
       setSearchUrl("");
     } catch (error) {
@@ -114,30 +119,32 @@ const Home = () => {
 
   return (
     <div className="h-screen w-full pt-20 bg-gradient-to-br from-slate-950 via-cyan-900 to-slate-900 flex">
-      {/* Sidebar */}
+      {/* History Sidebar starts from here */}
       <div className="sm:flex text-white hidden">
         <ResizableSidebar className="shadow-r bg-slate-800 w-64 h-full overflow-y-auto">
-          {loading && <p className="p-4 text-sm">Loading...</p>}
-          {errors && <p className="text-red-500 p-4 text-sm">{errors}</p>}
-          {!loading && history.length === 0 && !errors ? (
-            <p className="p-4 text-sm">No history available</p>
-          ) : (
-            <ul className="p-4">
-              {history.map((item) => (
-                <li
-                  key={item.searchHistoryId}
-                  className="px-4 my-5 text-sm cursor-pointer hover:text-cyan-300 transition-colors"
-                  onClick={() => handleTitleClick(item.searchHistoryId)}
-                >
-                  {item.title}
-                </li>
-              ))}
-            </ul>
-          )}
+          <div className="p-4">
+            {loading && <p className="p-4 text-sm">Loading...</p>}
+            {errors && <p className="text-red-500 p-4 text-sm">{errors}</p>}
+            {!loading && history.length === 0 && !errors ? (
+              <p className="p-4 text-sm">No history available</p>
+            ) : (
+              <ul className="p-4">
+                {history.map((item) => (
+                  <li
+                    key={item.searchHistoryId}
+                    className="px-4 my-5 text-sm cursor-pointer hover:text-cyan-300 transition-colors"
+                    onClick={() => handleTitleClick(item.searchHistoryId)}
+                  >
+                    {item.title}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </ResizableSidebar>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content Section starts from here */}
       <div className="flex-1 h-full overflow-y-auto px-6 py-10 text-white">
         {errors && (
           <div className="mb-6 p-4 rounded-lg bg-red-600/20 border border-red-500 text-red-400">
