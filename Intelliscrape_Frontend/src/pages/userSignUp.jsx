@@ -69,7 +69,6 @@ const UserSignUp = () => {
         const message = error.response.data.message.trim();
         
         if (message === "All fields are required") {
-          // Split the general error into field-specific messages
           newErrors.userName = "Full name is required";
           newErrors.email = "Email is required";
           newErrors.password = "Password is required";
@@ -77,13 +76,11 @@ const UserSignUp = () => {
           newErrors.email = message;
         } else if (message.startsWith("Password must be 8-12 characters long")) {
           newErrors.password = message;
-        } else if (message === "User already exisits with this email") {  // Note: Fix the typo in backend to "exists" if possible
+        } else if (message === "User already exisits with this email") {
           newErrors.email = "User already exisits with this email";
         } else if (message === "Error while signing up user") {
-          // General server error
           alert(message);
         } else {
-          // Fallback for any other message
           alert(message);
         }
       } else {
@@ -481,7 +478,7 @@ const UserSignUp = () => {
                 Must be at least 8 characters with mixed case, numbers & symbols
               </label>
               {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                <p className="text-red-500 text-[8px] md:text-[9px] lg:text-xs mt-1">{errors.password}</p>
               )}
             </div>
 
@@ -494,7 +491,7 @@ const UserSignUp = () => {
                 checked={policyAccept}
                 onChange={(e) => {
                   setPolicyAccept(e.target.checked);
-                  setErrors((prev) => ({ ...prev, policy: "" })); // Clear error on change
+                  setErrors((prev) => ({ ...prev, policy: "" }));
                 }}
               />
               <p className="text-slate-300 text-[8px] lg:text-base px-2">
