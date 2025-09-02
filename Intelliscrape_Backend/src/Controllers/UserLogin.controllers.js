@@ -51,12 +51,3 @@ const login = async (req, res, next) => {
 };
 
 export default login;
-
-/* ===========================================================================
-   Challenges Faced and Resolutions
-   =========================================================================== 
-   - Challenge: Token payload used userId instead of id, causing middleware to fail in finding the user.
-     - Resolution: Updated token signing to use id, aligning with middleware expectation and fixing user lookup.
-   - Challenge: 
-     - Resolution: 
-   =========================================================================== */

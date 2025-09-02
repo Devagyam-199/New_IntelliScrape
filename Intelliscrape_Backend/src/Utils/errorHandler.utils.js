@@ -1,4 +1,3 @@
-// errorHandler.js
 import APIError from "./apiError.utils.js";
 
 const globalErrorHandler = (err, req, res, next) => {

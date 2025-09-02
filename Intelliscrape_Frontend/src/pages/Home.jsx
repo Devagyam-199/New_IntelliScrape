@@ -124,15 +124,14 @@ const Home = () => {
         <ResizableSidebar className="shadow-r bg-slate-800 w-64 h-full overflow-y-auto">
           <div className="p-4">
             {loading && <p className="p-4 text-sm">Loading...</p>}
-            {errors && <p className="text-red-500 p-4 text-sm">{errors}</p>}
             {!loading && history.length === 0 && !errors ? (
-              <p className="p-4 text-sm">No history available</p>
+              <p className="p-4 text-base font-medium">No history available</p>
             ) : (
               <ul className="p-4">
                 {history.map((item) => (
                   <li
                     key={item.searchHistoryId}
-                    className="px-4 my-5 text-sm cursor-pointer hover:text-cyan-300 transition-colors"
+                    className="px-4 my-5 text-base font-medium cursor-pointer hover:text-cyan-300 transition-colors"
                     onClick={() => handleTitleClick(item.searchHistoryId)}
                   >
                     {item.title}
@@ -202,7 +201,9 @@ const Home = () => {
               <div className="mb-4">
                 <h3 className="text-lg font-semibold">Paragraphs</h3>
                 {selectedData.paragraphs.map((para, index) => (
-                  <p key={index} className="mb-2">{para}</p>
+                  <p key={index} className="mb-2">
+                    {para}
+                  </p>
                 ))}
               </div>
             )}

@@ -40,7 +40,7 @@ const UserLogin = () => {
         setLogSuccess(true);
       })
       .catch((err) => {
-        console.error(err);
+        alert(err);
       })
       .finally(() => console.log("Login request finished"));
   };
@@ -239,15 +239,7 @@ const UserLogin = () => {
               <span className="text-gray-400 text-md">or</span>
               <div className="flex-1 border-t mt-1 border-gray-600"></div>
             </div>
-            <div>
-              <button
-                aria-label="Sign in with Google"
-                className="w-full backdrop-blur-md cursor-pointer bg-slate-700/80 px-5 py-3 text-white font-normal rounded-md"
-              >
-                Continue with Google
-              </button>
-            </div>
-            <div className="flex justify-center text-xs sm:text-sm md:text-base mt-2 items-center font-semibold">
+            <div className="flex justify-center text-xs sm:text-sm md:text-base items-center font-semibold">
               <p className="text-slate-400">Don't have an account?</p>
               <Link
                 to="/signup"

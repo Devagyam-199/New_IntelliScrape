@@ -28,7 +28,6 @@ const userSignUp = async (req, res) => {
       passHash,
     });
 
-    //send response to frontend
     res.status(201).json({
       success: true,
       message: "User signed up successfully",

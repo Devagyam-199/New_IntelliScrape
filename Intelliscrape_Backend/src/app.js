@@ -2,11 +2,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./Utils/errorHandler.utils.js";
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 const app = express();
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -17,7 +14,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use('/screenshots', express.static(path.join(__dirname, '..', 'screenshots')));
 
 
 import uservalidationrouter from "./Routes/api.userSignUp.routes.js";

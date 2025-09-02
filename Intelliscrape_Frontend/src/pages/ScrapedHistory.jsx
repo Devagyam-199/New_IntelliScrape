@@ -75,7 +75,7 @@ const ScrapedHistory = () => {
           </h1>
           <button
             onClick={() => navigate("/")}
-            className="px-3 py-2 sm:px-4 sm:py-2 bg-cyan-600 text-white text-xs sm:text-sm md:text-base rounded-2xl hover:bg-cyan-700 transition-colors"
+            className="px-3 py-2 sm:px-4 sm:py-2 bg-cyan-600 text-white text-xs sm:text-sm md:text-base rounded-full hover:bg-cyan-700 transition-colors"
           >
             Back to Home
           </button>
