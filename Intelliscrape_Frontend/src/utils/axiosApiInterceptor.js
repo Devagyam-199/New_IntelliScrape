@@ -1,12 +1,12 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: "https://new-intelliscrape.onrender.com/api/v1",
   withCredentials: true,
 });
 
 const refreshApi = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: "https://new-intelliscrape.onrender.com/api/v1",
   withCredentials: true,
 });
 

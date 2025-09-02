@@ -28,7 +28,7 @@ const UserLogin = () => {
 
     axios
       .post(
-        "http://localhost:3000/api/v1/user/login",
+        "https://new-intelliscrape.onrender.com/api/v1/user/login",
         {
           identifier: identifier,
           password: password,

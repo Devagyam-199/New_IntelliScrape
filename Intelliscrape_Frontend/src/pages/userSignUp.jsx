@@ -54,7 +54,7 @@ const UserSignUp = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/v1/user/signup`,
+        `https://new-intelliscrape.onrender.com/api/v1/user/signup`,
         {
           name: userName,
           email: email,
