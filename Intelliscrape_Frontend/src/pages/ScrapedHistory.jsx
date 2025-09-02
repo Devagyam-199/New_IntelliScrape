@@ -44,7 +44,7 @@ const ScrapedHistory = () => {
       setLoading(true);
       setErrors(null);
       const response = await api.get(`/access/history-data/${searchHistoryId}`);
-      navigate("/", { state: { selectedData: response.data.data } });
+      navigate("/home", { state: { selectedData: response.data.data } });
     } catch (error) {
       console.error("Error fetching scraped data:", {
         message: error.message,
@@ -74,7 +74,7 @@ const ScrapedHistory = () => {
             Scrape History
           </h1>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
             className="px-3 py-2 sm:px-4 sm:py-2 bg-cyan-600 text-white text-xs sm:text-sm md:text-base rounded-full hover:bg-cyan-700 transition-colors"
           >
             Back to Home

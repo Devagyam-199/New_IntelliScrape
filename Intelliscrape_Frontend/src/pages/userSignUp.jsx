@@ -26,7 +26,7 @@ const UserSignUp = () => {
   useEffect(() => {
     if (signSuccess) {
       const timer = setTimeout(() => {
-        navigate("/login");
+        navigate("/");
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -96,7 +96,7 @@ const UserSignUp = () => {
 
   return (
     <div className="flex w-full h-screen">
-      {/* LEFT PANEL (unchanged) */}
+      {/* LEFT PANEL */}
       <div className="hidden md:flex w-1/2 bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-950 relative">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-70"

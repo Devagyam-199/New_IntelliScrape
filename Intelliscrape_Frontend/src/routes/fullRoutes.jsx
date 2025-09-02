@@ -10,9 +10,9 @@ const AboutUs = lazy(() => import("../pages/AboutUs"));
 const ScrapedHistory = lazy(() => import("../pages/ScrapedHistory"));
 
 const fullRoutes = [
-  { path: "/", element: <Home /> },
+  { path: "/", element: <UserLogin /> },
   { path: "/signup", element: <UserSignUp /> },
-  { path: "/login", element: <UserLogin /> },
+  { path: "/home", element: <Home /> },
   { path: "/terms-and-conditions", element: <TermsnConditions /> },
   { path: "/privacy-policy", element: <PrivacyPolicy /> },
   {
