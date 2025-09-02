@@ -10,7 +10,7 @@ const ProtectRoutes = ({ children }) => {
     return <LoadingScreen loading={loading} />;
   }
 
-  return user ? children : <Navigate to="/login" replace />;
+  return user ? children : <Navigate to="/" replace />;
 
 };
 

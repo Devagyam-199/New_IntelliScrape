@@ -10,7 +10,7 @@ const Navbar = () => {
 
   const [hamopen, setHamOpen] = useState(false);
 
-  const hideNavbarPaths = ["/login", "/signup"];
+  const hideNavbarPaths = ["/", "/signup"];
   if (hideNavbarPaths.includes(location.pathname)) {
     return null;
   }
@@ -18,7 +18,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
