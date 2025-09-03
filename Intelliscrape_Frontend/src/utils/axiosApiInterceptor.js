@@ -3,11 +3,17 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "https://new-intelliscrape.onrender.com/api/v1",
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 const refreshApi = axios.create({
   baseURL: "https://new-intelliscrape.onrender.com/api/v1",
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // Request interceptor to flag endpoints that skip refresh
