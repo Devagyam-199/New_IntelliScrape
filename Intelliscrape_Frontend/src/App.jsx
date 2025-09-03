@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import fullRoutes from "./routes/fullRoutes";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./contexts/AuthContext";
