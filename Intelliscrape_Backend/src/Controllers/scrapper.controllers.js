@@ -1,17 +1,15 @@
-import { cleanUp, handleError } from "./scraper/scraperCleanUp.controllers.js";
-import scrapperSetup from "./scraper/scraperSetup.controllers.js";
-import dataExtractor from "./scraper/scraperExtracter.controllers.js";
-import summerizer from "./scraper/scraperAIsum.controllers.js";
-import { ScrapeResult } from "../Models/scrapeResult.models.js";
-import { AISummary } from "../Models/AISummary.models.js";
-
 const scraper = async (req, res) => {
   let searchHistory, browser, page, crawlDelay;
   try {
-    const { requrl } = req.body;
+    const { requrl, maxPages = 1 } = req.body;
     const userId = req.user.id;
-    if (!requrl) {
-      throw new APIError(400, "URL is required to begin scraping");
+    if (!requrl || typeof requrl !== "string" || !requrl.trim()) {
+      throw new APIError(400, "Valid URL is required to begin scraping");
+    }
+    try {
+      new URL(requrl);
+    } catch {
+      throw new APIError(400, "Invalid URL format");
     }
 
     ({ searchHistory, browser, page, crawlDelay } = await scrapperSetup(
@@ -22,7 +20,7 @@ const scraper = async (req, res) => {
     const { allParas, allItems, extractedData } = await dataExtractor(
       page,
       searchHistory,
-      3,
+      maxPages,
       crawlDelay
     );
 
@@ -41,17 +39,16 @@ const scraper = async (req, res) => {
       },
       metadata: extractedData.jsonLd || {},
     });
-    await scrapeResult.save();
-    console.log(`ScrapeResult saved`);
-
     const aiSummary = new AISummary({
       scraperesultId: scrapeResult._id,
       summaryData,
-      summaryModel: "gemini-2.5-flash",
+      summaryModel: "gemini-1.5-flash",
       userId,
     });
-    await aiSummary.save();
-    console.log(`AISummary saved`);
+
+    await Promise.all([scrapeResult.save(), aiSummary.save()]);
+    console.log(`ScrapeResult and AISummary saved`);
+
     const scrapedData = {
       searchHistoryId: searchHistory._id,
       title: extractedData.title || "No title",
@@ -67,5 +64,3 @@ const scraper = async (req, res) => {
     await handleError(res, searchHistory, browser, error);
   }
 };
-
-export default scraper;

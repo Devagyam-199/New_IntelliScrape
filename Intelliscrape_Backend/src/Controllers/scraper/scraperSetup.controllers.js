@@ -10,6 +10,8 @@ import APIError from "../../Utils/apiError.utils.js";
 const puppeteer = addExtra(puppeteerCore);
 puppeteer.use(StealthPlugin());
 
+const robotsCache = new Map();
+
 const scrapperSetup = async (requrl, userId) => {
   try {
     console.log(`Creating setup for url: ${requrl}`);
@@ -28,13 +30,20 @@ const scrapperSetup = async (requrl, userId) => {
     const pathUrl = urlObj.pathname || `/`;
 
     let robotstxt = "";
-    try {
-      const roboResponse = await axios.get(`${domain}/robots.txt`, {
-        timeout: 1000,
-      });
-      robotstxt = roboResponse.data || "";
-    } catch (error) {
-      console.log("No robots.txt found; assuming allowed for scraping");
+    const cacheKey = domain;
+    if (robotsCache.has(cacheKey)) {
+      robotstxt = robotsCache.get(cacheKey);
+      console.log(`Using cached robots.txt for ${domain}`);
+    } else {
+      try {
+        const roboResponse = await axios.get(`${domain}/robots.txt`, {
+          timeout: 500,
+        });
+        robotstxt = roboResponse.data || "";
+        robotsCache.set(cacheKey, robotstxt);
+      } catch (error) {
+        console.log("No robots.txt found; assuming allowed for scraping");
+      }
     }
 
     const robots = robotParser(`${domain}/robots.txt`, robotstxt);

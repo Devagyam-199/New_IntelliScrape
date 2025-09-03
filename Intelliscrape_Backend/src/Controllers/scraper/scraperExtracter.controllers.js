@@ -1,28 +1,38 @@
 import APIError from "../../Utils/apiError.utils.js";
 
-const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
+const dataExtractor = async (page, searchHistory, maxPages = 2, crawlDelay) => {
   let allParas = [];
   let allItems = [];
-  let currentUrl = searchHistory.url;
-  let pageCount = 0;
   let extractedData;
+  let pageCount = 0;
+  let currentUrl = searchHistory.url;
+
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const resourceType = req.resourceType();
+    if (["image", "media", "font", "stylesheet"].includes(resourceType)) {
+      req.abort();
+    } else {
+      req.continue();
+    }
+  });
 
   while (pageCount < maxPages) {
     let attempt = 0;
-    while (attempt < 3) {
+    while (attempt < 2) {
       try {
-        console.log(`Navigating to ${currentUrl}`);
+        console.log(`Navigating to ${currentUrl} (Page ${pageCount + 1})`);
         await page.goto(currentUrl, {
-          waitUntil: "networkidle2",
-          timeout: "7000",
+          waitUntil: "domcontentloaded",
+          timeout: 5000,
         });
         break;
       } catch (error) {
         attempt++;
-        if (attempt >= 3) {
+        if (attempt >= 2) {
           throw new APIError(429, `Navigation failed for ${currentUrl}`);
         }
-        await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       }
     }
 
@@ -37,21 +47,13 @@ const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
     }
 
     await page.evaluate(async () => {
-      let totalHeight = 0;
-      const distance = 100;
-      const timer = setInterval(() => {
-        const scrollHeight = document.body.scrollHeight;
-        window.scrollBy(0, distance);
-        totalHeight += distance;
-        if (totalHeight >= scrollHeight - window.innerHeight)
-          clearInterval(timer);
-      }, 100);
+      await new Promise((resolve) => {
+        window.scrollTo(0, document.body.scrollHeight);
+        setTimeout(resolve, 500);
+      });
     });
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1000 + Math.random() * 2000)
-    );
 
-    extractedData = await page.evaluate(() => {
+    const pageData = await page.evaluate(() => {
       const title = document.querySelector("title")?.innerText || "No title";
       const metaDescription =
         document.querySelector('meta[name="description"]')?.content ||
@@ -69,7 +71,8 @@ const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
           tag: h.tagName.toLowerCase(),
           text: h.innerText.trim(),
         }))
-        .filter((h) => h.text);
+        .filter((h) => h.text)
+        .slice(0, 10);
       const paragraphs = Array.from(
         document.querySelectorAll(
           'p, article, div.content, main, section, div[class*="content"], div[class*="main"], div[class*="article"]'
@@ -77,18 +80,18 @@ const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
       )
         .map((p) => p.innerText.trim())
         .filter((t) => t)
-        .slice(0, 20);
+        .slice(0, 10);
       const links = Array.from(document.querySelectorAll("a"))
         .map((a) => ({
           href: a.href,
           text: a.innerText.trim(),
         }))
         .filter((l) => l.text && l.href)
-        .slice(0, 10);
+        .slice(0, 5);
       const imageAlts = Array.from(document.querySelectorAll("img[alt]"))
         .map((img) => img.alt.trim())
         .filter((alt) => alt)
-        .slice(0, 10);
+        .slice(0, 5);
       const jsonLd = Array.from(
         document.querySelectorAll('script[type="application/ld+json"]')
       )
@@ -129,7 +132,7 @@ const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
           };
         })
         .filter((item) => item.title && (item.price || item.availability))
-        .slice(0, 5);
+        .slice(0, 3);
       return {
         title,
         metaDescription,
@@ -145,8 +148,12 @@ const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
       };
     });
 
-    allParas.push(...extractedData.paragraphs);
-    allItems.push(...extractedData.items);
+    if (pageCount === 0) {
+      extractedData = pageData;
+    }
+
+    allParas.push(...pageData.paragraphs);
+    allItems.push(...pageData.items);
 
     const nextPage = await page.evaluate(() => {
       const nextButton = document.querySelector(
@@ -155,12 +162,18 @@ const dataExtractor = async (page, searchHistory, maxPages, crawlDelay) => {
       return nextButton?.href || null;
     });
 
-    if (!nextPage || pageCount >= maxPages - 1) break;
+    if (!nextPage || pageCount >= maxPages - 1) {
+      console.log(`No more pages to scrape or max pages (${maxPages}) reached`);
+      break;
+    }
 
     currentUrl = nextPage;
     pageCount++;
     await new Promise((resolve) => setTimeout(resolve, crawlDelay * 1000));
   }
+
+  allParas = [...new Set(allParas)];
+  allItems = [...new Set(allItems.map(JSON.stringify))].map(JSON.parse);
 
   return { allParas, allItems, extractedData };
 };

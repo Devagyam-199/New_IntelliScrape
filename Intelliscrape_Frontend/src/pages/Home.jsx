@@ -66,7 +66,10 @@ const Home = () => {
     try {
       setLoading(true);
       setErrors(null);
-      const response = await api.post("/access/scrape", { requrl: searchUrl });
+      const response = await api.post("/access/scrape", {
+        requrl: searchUrl,
+        maxPages: 2,
+      });
       setSelectedData(response.data.data);
       const historyResponse = await api.get("/access/history?page=1&limit=10");
       setHistory(historyResponse.data.data);
