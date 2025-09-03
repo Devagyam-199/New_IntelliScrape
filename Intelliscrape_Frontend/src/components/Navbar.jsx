@@ -42,13 +42,13 @@ const Navbar = () => {
               <ul className="flex w-full justify-center gap-x-2 sm:gap-x-3 items-center font-normal text-base text-white">
                 <li
                   className={`px-4 sm:px-7 py-1.5 transition-[border-color,border-width] duration-200 ${
-                    location.pathname === "/"
+                    location.pathname === "/home"
                       ? "border-b-[3px] border-b-cyan-600"
                       : ""
                   } hover:border-b-[2px] hover:border-b-cyan-500`}
                 >
                   <Link
-                    to="/"
+                    to="/home"
                     className="block text-center focus-visible:outline focus-visible:outline-cyan-500 focus-visible:outline-offset-2"
                   >
                     Home
@@ -82,7 +82,7 @@ const Navbar = () => {
         ) : (
           <div className="h-full w-1/3 flex space-x-5 justify-center items-center">
             <Link
-              to="/login"
+              to="/"
               className="md:w-1/2 lg:w-1/3 hover:text-lg mt-3 border border-cyan-400 cursor-pointer flex justify-center items-center space-x-2 hover:border-2 hover-px-5 hover-py-3 text-center text-cyan-400 hover:text-white hover:bg-cyan-400 active:bg-cyan-400 active:text-white font-semibold py-2 px-4 rounded-md transition-all duration-200 focus:outline-none"
             >
               Login
@@ -141,12 +141,12 @@ const Navbar = () => {
             <ul className="space-y-7 text-center font-medium text-lg text-white">
               <li
                 className={`px-4 sm:px-7 py-1.5 transition-[border-color,border-width] duration-200 ${
-                  location.pathname === "/"
+                  location.pathname === "/home"
                     ? "border-b-[3px] border-b-cyan-600"
                     : ""
                 } hover:border-b-[3px] hover:border-b-cyan-500`}
               >
-                <Link to={"/"}>Home</Link>
+                <Link to={"/home"}>Home</Link>
               </li>
               <li
                 className={`px-4 sm:px-7 py-1.5 transition-[border-color,border-width] duration-200 ${
