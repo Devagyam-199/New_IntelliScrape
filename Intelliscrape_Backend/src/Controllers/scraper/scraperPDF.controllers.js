@@ -1,7 +1,10 @@
-import puppeteer from "puppeteer-extra";
-import stealthPlugin from "puppeteer-extra-plugin-stealth";
+import { addExtra } from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import chromium from "@sparticuz/chromium";
+import puppeteerCore from "puppeteer-core";
 
-puppeteer.use(stealthPlugin());
+const puppeteer = addExtra(puppeteerCore);
+puppeteer.use(StealthPlugin());
 
 const scrapePDf = async (
   searchHistory,
@@ -11,19 +14,9 @@ const scrapePDf = async (
   summaryData = "No summary available",
   highlights = []
 ) => {
-  // Ensure arrays are valid
   allParas = Array.isArray(allParas) ? allParas : [];
   allItems = Array.isArray(allItems) ? allItems : [];
   highlights = Array.isArray(highlights) ? highlights : [];
-
-  console.log("PDF data:", { // Debug
-    title: extractedData?.title,
-    url: searchHistory.url,
-    summaryData,
-    highlights,
-    paragraphCount: allParas.length,
-    itemCount: allItems.length,
-  });
 
   const escapeHtml = (text) => {
     if (typeof text !== "string") return "";
@@ -100,10 +93,18 @@ const scrapePDf = async (
     </html>
   `;
 
-  const browser = await puppeteer.launch({ headless: true });
-  const pdfPage = await browser.newPage();
+  let browser;
   try {
+    browser = await puppeteer.launch({
+      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+    });
+
     console.log("Generating PDF content in memory");
+    const pdfPage = await browser.newPage();
     await pdfPage.setContent(htmlContent, { waitUntil: "networkidle0" });
     const pdfBuffer = await pdfPage.pdf({
       format: "A4",
@@ -112,12 +113,13 @@ const scrapePDf = async (
     });
     console.log("PDF generated in memory for SearchHistory");
     await pdfPage.close();
-    await browser.close();
     return pdfBuffer;
   } catch (error) {
-    await pdfPage.close();
-    await browser.close();
     throw new Error(`PDF generation failed: ${error.message}`);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 };
 

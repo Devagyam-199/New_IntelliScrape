@@ -22,9 +22,10 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.1",
-    "puppeteer": "^24.16.0",
+    "puppeteer-core": "^23.5.3",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "@sparticuz/chromium": "^138.0.2",
     "robots-parser": "^3.0.1"
   },
   "devDependencies": {
