@@ -64,3 +64,5 @@ const scraper = async (req, res) => {
     await handleError(res, searchHistory, browser, error);
   }
 };
+
+export default scraper;
