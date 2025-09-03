@@ -1,11 +1,14 @@
-import puppeteer from "puppeteer-extra";
-import stealthPlugin from "puppeteer-extra-plugin-stealth";
+import { addExtra } from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import chromium from "@sparticuz/chromium";
+import puppeteerCore from "puppeteer-core";
 import robotParser from "robots-parser";
 import axios from "axios";
 import { SearchHistory } from "../../Models/searchHistory.models.js";
 import APIError from "../../Utils/apiError.utils.js";
 
-puppeteer.use(stealthPlugin());
+const puppeteer = addExtra(puppeteerCore);
+puppeteer.use(StealthPlugin());
 
 const scrapperSetup = async (requrl, userId) => {
   try {
@@ -34,7 +37,7 @@ const scrapperSetup = async (requrl, userId) => {
       console.log("No robots.txt found; assuming allowed for scraping");
     }
 
-    const robots = robotParser(`${domain}//robots.txt`, robotstxt);
+    const robots = robotParser(`${domain}/robots.txt`, robotstxt);
 
     const isAllowed =
       robotstxt.trim() === "" || robots.isAllowed(pathUrl, "*") !== false;
@@ -51,12 +54,11 @@ const scrapperSetup = async (requrl, userId) => {
     const crawlDelay = robots.getCrawlDelay("*") || 0;
 
     const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-      ],
+      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: "new",
+      ignoreHTTPSErrors: true,
     });
 
     const page = await browser.newPage();
@@ -64,7 +66,7 @@ const scrapperSetup = async (requrl, userId) => {
 
     return { searchHistory, browser, page, crawlDelay };
   } catch (error) {
-    throw new APIError(400, error);
+    throw new APIError(400, error.message || "Failed to set up scraper");
   }
 };
 
