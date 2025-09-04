@@ -524,7 +524,7 @@ const UserSignUp = () => {
           <p className="text-xs md:text-sm lg:text-lg text-slate-100 text-center">
             Already have an account?{" "}
             <span className="text-cyan-400 hover:text-cyan-600 hover:underline transition-all duration-150">
-              <Link to={"/login"}>Login</Link>
+              <Link to={"/"}>Login</Link>
             </span>
           </p>
         </div>

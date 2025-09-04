@@ -1,15 +1,17 @@
+import { cleanUp, handleError } from "./scraper/scraperCleanUp.controllers.js";
+import scrapperSetup from "./scraper/scraperSetup.controllers.js";
+import dataExtractor from "./scraper/scraperExtracter.controllers.js";
+import summerizer from "./scraper/scraperAIsum.controllers.js";
+import { ScrapeResult } from "../Models/scrapeResult.models.js";
+import { AISummary } from "../Models/AISummary.models.js";
+
 const scraper = async (req, res) => {
   let searchHistory, browser, page, crawlDelay;
   try {
-    const { requrl, maxPages = 1 } = req.body;
+    const { requrl } = req.body;
     const userId = req.user.id;
-    if (!requrl || typeof requrl !== "string" || !requrl.trim()) {
-      throw new APIError(400, "Valid URL is required to begin scraping");
-    }
-    try {
-      new URL(requrl);
-    } catch {
-      throw new APIError(400, "Invalid URL format");
+    if (!requrl) {
+      throw new APIError(400, "URL is required to begin scraping");
     }
 
     ({ searchHistory, browser, page, crawlDelay } = await scrapperSetup(
@@ -20,7 +22,7 @@ const scraper = async (req, res) => {
     const { allParas, allItems, extractedData } = await dataExtractor(
       page,
       searchHistory,
-      maxPages,
+      3,
       crawlDelay
     );
 
@@ -39,16 +41,17 @@ const scraper = async (req, res) => {
       },
       metadata: extractedData.jsonLd || {},
     });
+    await scrapeResult.save();
+    console.log(`ScrapeResult saved`);
+
     const aiSummary = new AISummary({
       scraperesultId: scrapeResult._id,
       summaryData,
-      summaryModel: "gemini-1.5-flash",
+      summaryModel: "gemini-2.5-flash",
       userId,
     });
-
-    await Promise.all([scrapeResult.save(), aiSummary.save()]);
-    console.log(`ScrapeResult and AISummary saved`);
-
+    await aiSummary.save();
+    console.log(`AISummary saved`);
     const scrapedData = {
       searchHistoryId: searchHistory._id,
       title: extractedData.title || "No title",
