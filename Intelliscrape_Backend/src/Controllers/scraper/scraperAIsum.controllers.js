@@ -3,7 +3,7 @@ import APIError from "../../Utils/apiError.utils.js";
 
 const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-  const gemini = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const gemini = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const cleanParas = allParas
     .filter(
