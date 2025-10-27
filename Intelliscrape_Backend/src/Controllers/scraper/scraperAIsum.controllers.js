@@ -7,7 +7,9 @@ const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
 
   const cleanParas = allParas
     .filter(
-      (p) => p && !p.match(/^(Sign in|New customer\? Start here\.|Your (Lists|Account))/i)
+      (p) =>
+        p &&
+        !p.match(/^(Sign in|New customer\? Start here\.|Your (Lists|Account))/i)
     )
     .slice(0, 5);
   const cleanItems = allItems

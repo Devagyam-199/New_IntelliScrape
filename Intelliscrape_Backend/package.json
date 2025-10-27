@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@sparticuz/chromium": "^138.0.2",
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -25,7 +26,6 @@
     "puppeteer-core": "^23.5.3",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "@sparticuz/chromium": "^138.0.2",
     "robots-parser": "^3.0.1"
   },
   "devDependencies": {
