@@ -24,7 +24,7 @@ const dataExtractor = async (page, searchHistory, maxPages = 2, crawlDelay) => {
         console.log(`Navigating to ${currentUrl} (Page ${pageCount + 1})`);
         await page.goto(currentUrl, {
           waitUntil: "domcontentloaded",
-          timeout: 5000,
+          timeout: 15000,
         });
         break;
       } catch (error) {

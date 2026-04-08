@@ -12,9 +12,16 @@ const ScrapedHistory = lazy(() => import("../pages/ScrapedHistory"));
 const fullRoutes = [
   { path: "/", element: <UserLogin /> },
   { path: "/signup", element: <UserSignUp /> },
-  { path: "/home", element: <Home /> },
   { path: "/terms-and-conditions", element: <TermsnConditions /> },
   { path: "/privacy-policy", element: <PrivacyPolicy /> },
+  {
+    path: "/home",
+    element: (
+      <ProtectRoutes>
+        <Home />
+      </ProtectRoutes>
+    ),
+  },
   {
     path: "about-us",
     element: (

@@ -49,7 +49,7 @@ const Home = () => {
         data: error.response?.data,
       });
       setErrors(
-        error.response?.data?.message || "Failed to fetch scraped data"
+        error.response?.data?.message || "Failed to fetch scraped data",
       );
       setSelectedData(null);
     } finally {
@@ -57,33 +57,67 @@ const Home = () => {
     }
   };
 
+  const POLL_INTERVAL = 3000;
+  const MAX_POLLS = 40; 
+
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchUrl.trim()) {
       setErrors("Please enter a valid URL");
       return;
     }
+
     try {
       setLoading(true);
       setErrors(null);
-      const response = await api.post("/access/scrape", {
-        requrl: searchUrl,
-        maxPages: 2,
-      });
-      setSelectedData(response.data.data);
-      const historyResponse = await api.get("/access/history?page=1&limit=10");
-      setHistory(historyResponse.data.data);
-      setSearchUrl("");
+      setLoadingMessage("Queuing scrape job...");
+
+      const response = await api.post("/access/scrape", { requrl: searchUrl });
+
+      if (response.data.cached) {
+        setSelectedData(response.data.data);
+        setSearchUrl("");
+        return;
+      }
+
+      const { jobId } = response.data;
+      let polls = 0;
+
+      const pollJob = setInterval(async () => {
+        polls++;
+        try {
+          const statusRes = await api.get(`/access/scrape-status/${jobId}`);
+          const { state, progress, result, failReason } = statusRes.data;
+
+          setLoadingMessage(
+            state === "active"
+              ? `Processing... ${progress || 0}%`
+              : "Waiting in queue...",
+          );
+
+          if (state === "completed" && result) {
+            clearInterval(pollJob);
+            setSelectedData(result);
+            setSearchUrl("");
+            const histRes = await api.get("/access/history?page=1&limit=10");
+            setHistory(histRes.data.data);
+          } else if (state === "failed") {
+            clearInterval(pollJob);
+            setErrors(failReason || "Scraping failed. Please try again.");
+          } else if (polls >= MAX_POLLS) {
+            clearInterval(pollJob);
+            setErrors("Timed out waiting for results. Please try again.");
+          }
+        } catch {
+          clearInterval(pollJob);
+          setErrors("Lost connection while waiting for results.");
+        }
+      }, POLL_INTERVAL);
     } catch (error) {
-      console.error("Error scraping URL:", {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
       setErrors(error.response?.data?.message || "Failed to scrape URL");
-      setSelectedData(null);
     } finally {
       setLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -98,10 +132,10 @@ const Home = () => {
         `/access/generate-pdf?searchHistoryId=${selectedData.searchHistoryId}`,
         {
           responseType: "blob",
-        }
+        },
       );
       const pdfUrl = window.URL.createObjectURL(
-        new Blob([response.data], { type: "application/pdf" })
+        new Blob([response.data], { type: "application/pdf" }),
       );
       const link = document.createElement("a");
       link.href = pdfUrl;

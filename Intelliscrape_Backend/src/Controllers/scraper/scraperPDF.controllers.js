@@ -1,12 +1,6 @@
-import { addExtra } from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import chromium from "@sparticuz/chromium";
-import puppeteerCore from "puppeteer-core";
+import PDFDocument from "pdfkit";
 
-const puppeteer = addExtra(puppeteerCore);
-puppeteer.use(StealthPlugin());
-
-const scrapePDf = async (
+const scrapePDF = async (
   searchHistory,
   extractedData,
   allParas = [],
@@ -14,113 +8,74 @@ const scrapePDf = async (
   summaryData = "No summary available",
   highlights = []
 ) => {
-  allParas = Array.isArray(allParas) ? allParas : [];
-  allItems = Array.isArray(allItems) ? allItems : [];
-  highlights = Array.isArray(highlights) ? highlights : [];
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    const doc = new PDFDocument({ margin: 50, size: "A4" });
 
-  const escapeHtml = (text) => {
-    if (typeof text !== "string") return "";
-    return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  };
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
 
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>${escapeHtml(extractedData?.title || "Scraped Webpage")}</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="font-sans text-gray-800 max-w-4xl mx-auto p-8">
-      <h1 class="text-3xl font-bold mb-4">${escapeHtml(
-        extractedData?.title || "Scraped Webpage"
-      )}</h1>
-      <p class="mb-2"><strong class="font-semibold">URL:</strong> <a href="${
-        searchHistory.url
-      }" class="text-blue-600 hover:underline">${searchHistory.url}</a></p>
-      <p class="mb-6"><strong class="font-semibold">Date:</strong> ${new Date().toLocaleDateString(
-        "en-US",
-        { timeZone: "Asia/Kolkata" }
-      )}</p>
+    doc
+      .fontSize(22)
+      .fillColor("#1e3a5f")
+      .text(extractedData?.title || "Scraped Content", { align: "left" });
 
-      <h2 class="text-2xl font-semibold mb-3">Summary</h2>
-      <p class="text-gray-700 mb-6">${escapeHtml(summaryData)}</p>
+    doc.moveDown(0.5);
+    doc.fontSize(10).fillColor("#555").text(`URL: ${searchHistory.url}`);
+    doc
+      .text(
+        `Date: ${new Date().toLocaleDateString("en-US", { timeZone: "Asia/Kolkata" })}`
+      )
+      .moveDown(1);
 
-      ${
-        highlights.length > 0
-          ? `<h2 class="text-2xl font-semibold mb-3">Highlights</h2>
-            <ul class="list-disc pl-6 mb-6">
-              ${highlights
-                .map(
-                  (h) =>
-                    `<li class="font-bold text-blue-800 mb-2">${escapeHtml(
-                      h.replace(/^- |\* /, "")
-                    )}</li>`
-                )
-                .join("")}
-            </ul>`
-          : ""
-      }
+    doc
+      .moveTo(50, doc.y)
+      .lineTo(550, doc.y)
+      .strokeColor("#cccccc")
+      .stroke()
+      .moveDown(0.5);
 
-      <h2 class="text-2xl font-semibold mb-3">Main Content</h2>
-      ${allParas
-        .map((p) => `<p class="text-gray-700 mb-4">${escapeHtml(p)}</p>`)
-        .join("")}
+    doc.fontSize(15).fillColor("#1e3a5f").text("Summary").moveDown(0.3);
+    doc.fontSize(11).fillColor("#333").text(summaryData, { align: "justify" }).moveDown(1);
 
-      ${
-        allItems.length > 0
-          ? `
-        <h2 class="text-2xl font-semibold mb-3">Key Items</h2>
-        <ul class="list-disc pl-6 mb-6">
-          ${allItems
-            .map(
-              (item) =>
-                `<li class="text-gray-700">${escapeHtml(item.title)}${
-                  item.price ? ": " + escapeHtml(item.price) : ""
-                }${
-                  item.availability ? ", " + escapeHtml(item.availability) : ""
-                }</li>`
-            )
-            .join("")}
-        </ul>`
-          : ""
-      }
-    </body>
-    </html>
-  `;
-
-  let browser;
-  try {
-    browser = await puppeteer.launch({
-      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
-    });
-
-    console.log("Generating PDF content in memory");
-    const pdfPage = await browser.newPage();
-    await pdfPage.setContent(htmlContent, { waitUntil: "networkidle0" });
-    const pdfBuffer = await pdfPage.pdf({
-      format: "A4",
-      margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
-      printBackground: true,
-    });
-    console.log("PDF generated in memory for SearchHistory");
-    await pdfPage.close();
-    return pdfBuffer;
-  } catch (error) {
-    throw new Error(`PDF generation failed: ${error.message}`);
-  } finally {
-    if (browser) {
-      await browser.close();
+    // Highlight
+    if (highlights.length > 0) {
+      doc.fontSize(15).fillColor("#1e3a5f").text("Highlights").moveDown(0.3);
+      highlights.forEach((h) => {
+        doc
+          .fontSize(11)
+          .fillColor("#444")
+          .text(`• ${h.replace(/^- |\* /, "")}`, { indent: 10 })
+          .moveDown(0.2);
+      });
+      doc.moveDown(0.8);
     }
-  }
+
+    if (allParas.length > 0) {
+      doc.fontSize(15).fillColor("#1e3a5f").text("Main Content").moveDown(0.3);
+      allParas.slice(0, 8).forEach((p) => {
+        doc.fontSize(11).fillColor("#333").text(p, { align: "justify" }).moveDown(0.5);
+      });
+    }
+
+    if (allItems.length > 0) {
+      doc.moveDown(0.5);
+      doc.fontSize(15).fillColor("#1e3a5f").text("Key Items").moveDown(0.3);
+      allItems.forEach((item) => {
+        const line = [
+          item.title,
+          item.price ? `Price: ${item.price}` : null,
+          item.availability ? `Stock: ${item.availability}` : null,
+        ]
+          .filter(Boolean)
+          .join(" | ");
+        doc.fontSize(11).fillColor("#333").text(`• ${line}`, { indent: 10 }).moveDown(0.2);
+      });
+    }
+
+    doc.end();
+  });
 };
 
-export default scrapePDf;
+export default scrapePDF;
