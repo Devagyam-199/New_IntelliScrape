@@ -9,6 +9,7 @@ const Home = () => {
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchUrl, setSearchUrl] = useState("");
+  const [loadingMessage, setLoadingMessage] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -205,7 +206,7 @@ const Home = () => {
                 className="px-6 py-2 bg-cyan-600 text-white rounded-3xl hover:bg-cyan-700 transition-colors self-start"
                 disabled={loading}
               >
-                {loading ? "Scraping..." : "Scrape"}
+                {loading ? loadingMessage || "Processing..." : "Scrape"}
               </button>
             </form>
           </div>
