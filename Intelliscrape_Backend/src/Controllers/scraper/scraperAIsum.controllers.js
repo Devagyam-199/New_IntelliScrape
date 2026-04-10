@@ -6,19 +6,16 @@ const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
   const gemini = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: "gemini-2.0-flash",
     generationConfig: {
-      thinkingConfig: { thinkingBudget: 0 },
+      maxOutputTokens: 800,
+      temperature: 0.4,
     },
   });
 
   const cleanParas = allParas
     .filter(
-      (p) =>
-        p &&
-        !p.match(
-          /^(Sign in|New customer\? Start here\.|Your (Lists|Account))/i,
-        ),
+      (p) => p && !p.match(/^(Sign in|New customer|Your (Lists|Account))/i),
     )
     .slice(0, 5);
 
@@ -46,15 +43,20 @@ const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
 
   const truncated = contentToSummarize.substring(0, 2000);
 
-  const prompt = `Summarize the following web content in a concise paragraph (150-200 words), focusing on key themes and product details (if applicable). Provide 3-5 key highlights as bullet points starting with '- '. Focus on unique product details or features.
+  const prompt = `Summarize the following web content in a concise paragraph (150-200 words), focusing on key themes and product details if applicable. Then provide 3-5 key highlights as bullet points, each starting with '- '.
 
 Content:
 ${truncated}`;
 
   try {
-    console.log("Generating summary with Gemini API");
+    console.log("Calling Gemini API...");
     const result = await gemini.generateContent(prompt);
     const fullResponse = result.response.text().trim();
+
+    if (!fullResponse) {
+      console.error("Gemini returned empty response");
+      return { summaryData: "Summary unavailable", highlights: [] };
+    }
 
     const parts = fullResponse.split(/\n\n(?=- )/);
     const summaryData = parts[0].trim();
@@ -65,19 +67,25 @@ ${truncated}`;
       .map((h) => h.replace(/^- /, "").trim())
       .slice(0, 5);
 
+    console.log("Gemini summary generated successfully");
     return { summaryData, highlights };
   } catch (error) {
     console.error("Gemini API error:", {
       message: error.message,
       status: error.status,
-      statusText: error.statusText,
       errorDetails: error.errorDetails,
-      stack: error.stack,
     });
 
     if (error.status === 429) {
       throw new APIError(429, "Gemini rate limit exceeded; try again later");
     }
+    if (error.status === 400) {
+      console.error("Bad request to Gemini — check model name and parameters");
+    }
+    if (error.status === 403) {
+      console.error("Gemini API key issue — check billing or key validity");
+    }
+
     return { summaryData: "Error generating summary", highlights: [] };
   }
 };
