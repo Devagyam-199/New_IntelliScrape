@@ -67,7 +67,14 @@ ${truncated}`;
 
     return { summaryData, highlights };
   } catch (error) {
-    console.error(`Gemini error: ${error.message}`);
+    console.error("Gemini API error:", {
+      message: error.message,
+      status: error.status,
+      statusText: error.statusText,
+      errorDetails: error.errorDetails,
+      stack: error.stack,
+    });
+
     if (error.status === 429) {
       throw new APIError(429, "Gemini rate limit exceeded; try again later");
     }
