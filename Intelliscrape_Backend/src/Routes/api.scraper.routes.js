@@ -4,6 +4,7 @@ import generatePDF from "../Controllers/pdfGenerator.controllers.js";
 import accessTokenAuthorized from "../Middlewares/verifyAccessToken.middlewares.js";
 import getUserHistory from "../Controllers/history.controllers.js";
 import getScrapedData from "../Controllers/historyData.controllers.js";
+import { scrapeQueue } from "../queues/scrapeQueue.js";
 
 const scraperoute = Router();
 
@@ -23,9 +24,9 @@ scraperoute.get(
 
     if (!job) return res.status(404).json({ message: "Job not found" });
 
-    const state = await job.getState(); // waiting | active | completed | failed
+    const state = await job.getState();
     const progress = job.progress;
-    const result = state === "completed" ? await job.returnvalue : null;
+    const result = state === "completed" ? job.returnvalue : null;
     const failReason = state === "failed" ? job.failedReason : null;
 
     res.json({ state, progress, result, failReason });

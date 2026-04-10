@@ -59,7 +59,7 @@ const Home = () => {
   };
 
   const POLL_INTERVAL = 3000;
-  const MAX_POLLS = 40; 
+  const MAX_POLLS = 40;
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -78,6 +78,7 @@ const Home = () => {
       if (response.data.cached) {
         setSelectedData(response.data.data);
         setSearchUrl("");
+        setLoading(false);
         return;
       }
 
@@ -100,25 +101,30 @@ const Home = () => {
             clearInterval(pollJob);
             setSelectedData(result);
             setSearchUrl("");
+            setLoading(false); // ← stop loading here
+            setLoadingMessage("");
             const histRes = await api.get("/access/history?page=1&limit=10");
             setHistory(histRes.data.data);
           } else if (state === "failed") {
             clearInterval(pollJob);
             setErrors(failReason || "Scraping failed. Please try again.");
+            setLoading(false); // ← stop loading here
+            setLoadingMessage("");
           } else if (polls >= MAX_POLLS) {
             clearInterval(pollJob);
             setErrors("Timed out waiting for results. Please try again.");
+            setLoading(false);
+            setLoadingMessage("");
           }
         } catch {
           clearInterval(pollJob);
           setErrors("Lost connection while waiting for results.");
+          setLoading(false);
         }
       }, POLL_INTERVAL);
     } catch (error) {
       setErrors(error.response?.data?.message || "Failed to scrape URL");
-    } finally {
       setLoading(false);
-      setLoadingMessage("");
     }
   };
 

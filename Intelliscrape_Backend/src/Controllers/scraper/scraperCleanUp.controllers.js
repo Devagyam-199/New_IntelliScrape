@@ -17,7 +17,7 @@ export const cleanUp = async (
     searchHistory.status = "failed";
     await searchHistory.save();
     console.log(`SearchHistory updated to failed`);
-    throw new APIError(`Failed to process request: ${error.message}`);
+    throw new APIError(500,`Failed to process request: ${error.message}`);
   }
 };
 
