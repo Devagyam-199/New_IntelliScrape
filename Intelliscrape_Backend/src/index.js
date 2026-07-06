@@ -1,9 +1,9 @@
+dotenv.config();
 import dotenv from "dotenv";
 import dbConn from "./DB/dbconn.js";
 import { app } from "./app.js";
 import { scrapeWorker } from "./queues/scrapeQueue.js";
 
-dotenv.config();
 scrapeWorker.on("failed", (job, err) => {
   console.error(`Job ${job.id} failed:`, err.message);
 });

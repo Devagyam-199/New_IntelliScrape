@@ -54,7 +54,7 @@ const dataExtractor = async (page, searchHistory, maxPages = 2, crawlDelay) => {
     });
 
     const pageData = await page.evaluate(() => {
-      const title = document.querySelector("title")?.innerText || "No title";
+      const title = document.title || "No title";
       const metaDescription =
         document.querySelector('meta[name="description"]')?.content ||
         "No description";
