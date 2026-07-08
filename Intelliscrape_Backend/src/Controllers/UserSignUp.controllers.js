@@ -2,7 +2,7 @@ import { User } from "../Models/user.models.js";
 import bcrypt from "bcrypt";
 import APIError from "../Utils/apiError.utils.js";
 
-const userSignUp = async (req, res) => {
+const userSignUp = async (req, res, next) => {
   // 1): Take user details from request body
   // 2): Hash the password
   // 3): try to see if user already exists
@@ -38,10 +38,7 @@ const userSignUp = async (req, res) => {
     });
   } catch (error) {
     console.error("Signup Error:", error);
-    return res.status(500).json({
-      message: "Error while signing up user",
-      error: error.message,
-    });
+    next(error)
   }
 };
 

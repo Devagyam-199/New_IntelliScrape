@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const publicRoutes = ["/login", "/signup"];
+    const publicRoutes = ["/", "/signup"];
     if (publicRoutes.includes(location.pathname)) {
       setLoading(false);
       setUser(null);

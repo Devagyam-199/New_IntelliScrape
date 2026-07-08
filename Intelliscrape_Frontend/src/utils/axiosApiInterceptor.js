@@ -16,7 +16,6 @@ const refreshApi = axios.create({
   },
 });
 
-// Request interceptor to flag endpoints that skip refresh
 api.interceptors.request.use((config) => {
   if (config.url === "/auth/logout") {
     config.noRefresh = true;
@@ -30,18 +29,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalReq = error.config;
 
-    // Log for debugging
-    // if (process.env.NODE_ENV !== "production") {
-    //   console.log("Interceptor error:", {
-    //     status: error.response?.status,
-    //     message: error.response?.data?.message,
-    //     url: originalReq.url,
-    //     noRefresh: originalReq.noRefresh,
-    //     retry: originalReq._retry,
-    //   });
-    // }
-
-    // Handle 401 errors, but skip for flagged endpoints
     if (
       error.response?.status === 401 &&
       !originalReq._retry &&
@@ -53,7 +40,7 @@ api.interceptors.response.use(
         const refreshResponse = await refreshApi.post("/auth/refresh");
         console.log("Refresh response:", refreshResponse.data);
         if (refreshResponse.status === 200) {
-          return api(originalReq); // Retry the original request
+          return api(originalReq);
         } else {
           throw new Error(
             `Refresh failed with status: ${refreshResponse.status}`
@@ -62,8 +49,8 @@ api.interceptors.response.use(
       } catch (refreshError) {
         console.error("Refresh error:", refreshError);
         // Redirect only if not already on login page
-        if (window.location.pathname !== "/") {
-          window.location.href = "/";
+        if (window.location.hash !== "#/" && window.location.hash !== "") {
+          window.location.href = "/#/";
         }
         return Promise.reject(refreshError);
       }

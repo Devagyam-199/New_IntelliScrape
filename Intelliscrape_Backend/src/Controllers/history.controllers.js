@@ -33,6 +33,7 @@ const getUserHistory = async (req, res) => {
           searchHistoryId: history._id,
           status: history.status,
           scrapedAt: history.scrapedAt,
+          url:history.url,
           title: scrapeResult?.cleanData?.title === "No title" ? history.url : scrapeResult?.cleanData?.title || history.url
         };
       })

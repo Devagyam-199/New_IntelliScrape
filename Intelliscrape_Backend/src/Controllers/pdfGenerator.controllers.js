@@ -12,7 +12,7 @@ const generatePDF = async (req, res) => {
     }
 
     console.log(`Fetching SearchHistory`);
-    const searchHistory = await SearchHistory.findById(searchHistoryId);
+    const searchHistory = await SearchHistory.findOne({ _id: searchHistoryId, userId: req.user.id });
     if (!searchHistory) {
       throw new APIError(404, `Search history not found`);
     }

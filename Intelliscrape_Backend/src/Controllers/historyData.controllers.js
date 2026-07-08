@@ -10,12 +10,24 @@ const getScrapedData = async (req, res) => {
       throw new APIError(400, "searchHistoryId is required");
     }
 
-    const scrapeResult = await ScrapeResult.findOne({ searchHistoryId }).select("cleanData");
+    const searchHistory = await SearchHistory.findOne({
+      _id: searchHistoryId,
+      userId: req.user.id,
+    });
+    if (!searchHistory) {
+      throw new APIError(404, "No scrape data found for this history");
+    }
+
+    const scrapeResult = await ScrapeResult.findOne({ searchHistoryId }).select(
+      "cleanData",
+    );
     if (!scrapeResult) {
       throw new APIError(404, "No scrape data found for this history");
     }
 
-    const aiSummary = await AISummary.findOne({ scraperesultId: scrapeResult._id }).select("summaryData highlights");
+    const aiSummary = await AISummary.findOne({
+      scraperesultId: scrapeResult._id,
+    }).select("summaryData highlights");
 
     const scrapedData = {
       searchHistoryId,
