@@ -8,7 +8,21 @@ const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
     model: "gemini-2.5-flash",
     generationConfig: {
       maxOutputTokens: 800,
-      temperature: 0.4,
+      temperature: 0.2,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "object",
+        properties: {
+          summary: { type: "string" },
+          highlights: {
+            type: "array",
+            items: { type: "string" },
+            minItems: 3,
+            maxItems: 5,
+          },
+        },
+        required: ["summary", "highlights"],
+      },
     },
   });
 
@@ -42,7 +56,7 @@ const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
 
   const truncated = contentToSummarize.substring(0, 2000);
 
-  const prompt = `Summarize the following web content in a concise paragraph (150-200 words), focusing on key themes and product details if applicable. Then provide 3-5 key highlights as bullet points, each starting with '- '.
+  const prompt = `Summarize the following web content. Write a concise 150-200 word summary focusing on key themes and product details if applicable, and provide 3-5 key highlights as short standalone phrases (return them as separate array items, no bullet formatting needed).
 
 Content:
 ${truncated}`;
@@ -50,21 +64,36 @@ ${truncated}`;
   try {
     console.log("Calling Gemini API...");
     const result = await gemini.generateContent(prompt);
-    const fullResponse = result.response.text().trim();
 
-    if (!fullResponse) {
+    const candidate = result.response.candidates?.[0];
+    if (candidate?.finishReason && candidate.finishReason !== "STOP") {
+      console.error(`Gemini finished with reason: ${candidate.finishReason}`);
+      return { summaryData: "Summary unavailable", highlights: [] };
+    }
+
+    const rawText = result.response.text().trim();
+    if (!rawText) {
       console.error("Gemini returned empty response");
       return { summaryData: "Summary unavailable", highlights: [] };
     }
 
-    const parts = fullResponse.split(/\n\n(?=- )/);
-    const summaryData = parts[0].trim();
-    const highlightsText = parts.slice(1).join("\n\n").trim();
-    const highlights = highlightsText
-      .split("\n")
-      .filter((h) => h.trim().startsWith("- "))
-      .map((h) => h.replace(/^- /, "").trim())
-      .slice(0, 5);
+    let parsed;
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (parseErr) {
+      console.error("Gemini returned malformed JSON:", rawText);
+      return { summaryData: "Summary unavailable", highlights: [] };
+    }
+
+    const summaryData = typeof parsed.summary === "string" ? parsed.summary.trim() : "";
+    const highlights = Array.isArray(parsed.highlights)
+      ? parsed.highlights.filter((h) => typeof h === "string").slice(0, 5)
+      : [];
+
+    if (!summaryData) {
+      console.error("Gemini JSON missing valid summary field:", parsed);
+      return { summaryData: "Summary unavailable", highlights: [] };
+    }
 
     console.log("Gemini summary generated successfully");
     return { summaryData, highlights };

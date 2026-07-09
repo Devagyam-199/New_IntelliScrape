@@ -12,7 +12,7 @@ const loginValidation = (req, res, next) => {
 
   req.body.identifier = identifier.trim();
   if (req.body.identifier.includes("@")) {
-    req.body.identifier = req.body.identifier.toLowerCase(); // normalize email
+    req.body.identifier = req.body.identifier.toLowerCase();
   }
 
   next();
