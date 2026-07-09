@@ -1,5 +1,6 @@
 import { ScrapeResult } from "../Models/scrapeResult.models.js";
 import { AISummary } from "../Models/AISummary.models.js";
+import { SearchHistory } from "../Models/searchHistory.models.js";
 import APIError from "../Utils/apiError.utils.js";
 
 const getScrapedData = async (req, res) => {
