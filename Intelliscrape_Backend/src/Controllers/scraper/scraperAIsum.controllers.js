@@ -7,7 +7,7 @@ const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
   const gemini = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
     generationConfig: {
-      maxOutputTokens: 1000,
+      maxOutputTokens: 2000,
       temperature: 0.2,
       responseMimeType: "application/json",
       responseSchema: {
@@ -22,10 +22,7 @@ const summerizer = async (allParas = [], allItems = [], extractedData = {}) => {
           },
         },
         required: ["summary", "highlights"],
-      },
-      thinkingConfig : {
-        thinkingBudget : 0
-      },
+      }
     },
   });
 
