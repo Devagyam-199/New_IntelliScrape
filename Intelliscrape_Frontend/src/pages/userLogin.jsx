@@ -27,14 +27,10 @@ const UserLogin = () => {
     e.preventDefault();
 
     axios
-      .post(
-        "https://new-intelliscrape.onrender.com/api/v1/user/login",
-        {
-          identifier: identifier,
-          password: password,
-        },
-        { withCredentials: true }
-      )
+      .post("https://new-intelliscrape.onrender.com/api/v1/user/login", {
+        identifier: identifier,
+        password: password,
+      })
       .then((res) => {
         console.log(res.data);
         setLogSuccess(true);
@@ -191,7 +187,9 @@ const UserLogin = () => {
                     type="button"
                     className="absolute inset-y-0 right-4 flex items-center text-gray-400"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" />
